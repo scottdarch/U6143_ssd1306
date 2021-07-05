@@ -1,15 +1,19 @@
-Builddir        = build
-Target          = ${Builddir)/status_display
-CXX             = gcc
-ODIR            = obj
-SRC             = $(wildcard *.c)
-DIR             = $(notdir $(SRC))
-OBJ             = $(patsubst %.c, %.o, $(DIR))
-INC             = -Iinclude
+Builddir       := build
+Target         := $(Builddir)/status_display
+CXX            := gcc
+ODIR           := obj
+SRC            := ssd1306_i2c.c \
+                  status_display.c \
 
-$(Target): $(OBJ)
+OBJS            = $(SRC:%.c=$(Builddir)/%.o)
+CFLAGS         += -Iinclude
+
+$(Target) : $(OBJS)
+	$(CC) $^ -o $@
+
+$(Builddir)/%.o : %.c
 	mkdir -p $(Builddir)
-	$(CXX) $^ -o $@ -g -rdynamic
+	$(CC) $^ -o $@ $(CFLAGS) -c
 
 .PHONY:clean
 

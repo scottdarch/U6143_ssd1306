@@ -50,7 +50,7 @@ Now enable the service to run at boot:
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable status-display
-sudo systemctl sart status-display
+sudo systemctl start status-display
 ```
 
 # UCTRONICS to QWIIC

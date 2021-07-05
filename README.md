@@ -1,61 +1,63 @@
-# U6143_ssd1306
-## Preparation
+# SSD1306 – I<sup>2</sup>C OLED Dot Matrix Display
+
+Originally from [UCTRONICS/U6143_ssd1306](https://github.com/UCTRONICS/U6143_ssd1306), this is a modified driver for a front-panel status display for a Raspberry Pi.
+
+## Prerequisites
+
 ```bash
 sudo raspi-config
 ```
-Choose Interface Options 
-Enable i2c
+1. Choose Interface Options 
+2. Enable i2c
 
-##  Clone U6143_ssd1306 library 
 ```bash
-git clone https://github.com/UCTRONICS/U6143_ssd1306.git
+sudo apt-get install git
 ```
-## Compile 
+
+
+## Clone and Compile
+
 ```bash
-cd U6143_ssd1306/C
+git clone https://github.com/scottdarch/U6143_ssd1306.git
+cd U6143_ssd1306
+make
 ```
+
+## Install
+
 ```bash
-sudo make clean && sudo make 
-```
-## Run 
-```
-sudo ./display
+sudo cp build/status_display /bin
+sudo touch /etc/systemd/system/status-display.service
+sudo chmod 664 /etc/systemd/system/status-display.service
+sudo vi /etc/systemd/system/status-display.service
 ```
 
-## Add automatic start script
-- Open the rc.local file 
+The contents of /etc/systemd/system/status-display.service:
+
 ```bash
-sudo nano /etc/rc.local
-```
-- Add command to the rc.local file
-```bash
-cd /home/pi/U6143_ssd1306/C
-sudo make clean 
-sudo make 
-sudo ./display &
-```
-- reboot your system
+[Unit]
+Description=Drives an I2C display to show simple system status.
 
-## For older 0.91 inch lcd without mcu 
-- For the older version lcd without mcu controller, you can use python demo
-- Install the dependent library files
-```bash
-sudo pip3 install adafruit-circuitpython-ssd1306
-sudo apt-get install python3-pip
-sudo apt-get install python3-pil
-```
-- Test demo 
-```bash 
-cd /home/pi/U6143_ssd1306/python 
-sudo python3 ssd1306_stats.py
+[Service]
+ExecStart=/bin/status_display
+
+[Install]
+WantedBy=multi-user.target
 ```
 
+Now enable the service to run at boot:
 
+```
+sudo systemctl daemon-reload
+sudo systemctl enable status-display
+sudo systemctl sart status-display
+```
 
+# UCTRONICS to QWIIC
 
+I recommend using the [QWIIC pHAT](https://www.sparkfun.com/products/15945) from Sparkfun Electronics to connect the OLED to your Pi. Here's how to wire up an adapter cable:
 
-
-
-
-
-
+| Standard / Function | GND   | 3.3V   | SDA  | SCL    |
+|--------------------:|-------|--------|------|--------|
+| UCTRONICS           | White | Yellow | Red  | Black  |
+| QWIIC               | Black | Red    | Blue | Yellow |
